@@ -1,0 +1,132 @@
+/* public/css/styles.css */
+
+body {
+    background-color: #2F2F2F;
+    font-family: 'Orbitron', sans-serif;
+    color: #FFF5E4;
+    margin: 0;
+    padding: 0;
+    transition: background 0.5s ease;
+  }
+  
+  h1 {
+    font-weight: 700;
+    color: #C1D8C3;
+  }
+  
+  /* Navbar styling */
+  .navbar {
+    background-color: #6A9C89;
+  }
+  .navbar-brand {
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+  
+  /* Card container: vertical stack, centered */
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    align-items: center;
+  }
+  
+  /* Card styling: dark mode, 90% width */
+  .card {
+    width: 90%;
+    background-color: #333333;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease;
+    color: #FFF5E4;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+  
+  /* Card header (modern, no image) */
+  .card-header {
+    background: linear-gradient(135deg, #FFA725, #C1D8C3);
+    color: #FFF5E4;
+    font-weight: bold;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    padding: 15px 20px;
+    text-align: left;
+    font-size: 1.2rem;
+  }
+  
+  .card-body {
+    padding: 15px;
+  }
+  
+  .card-footer {
+    background-color: #6A9C89;
+    color: #FFF5E4;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    padding: 12px 20px;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
+  /* Sensor row: horizontal layout inside card */
+  .sensor-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 15px;
+  }
+  
+  /* Sensor chart container: fixed size to prevent canvas scaling issues */
+  .sensor-chart-container {
+    width: 120px;
+    height: 120px;
+    margin: 0 8px;
+    position: relative;
+  }
+  
+  /* Ensure canvases scale responsively */
+  .sensor-chart-container canvas {
+    width: 100% !important;
+    height: auto !important;
+  }
+  
+  /* Sensor labels */
+  .sensor-chart-container p {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #FFF5E4;
+  }
+  
+  /* Responsive adjustments for mobile devices */
+  @media (max-width: 768px) {
+    .card-container {
+      width: 100%;
+      padding: 10px;
+    }
+    .card {
+      width: 95%;
+    }
+    /* On mobile, allow the sensor row to wrap into two columns */
+    .sensor-row {
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+    .sensor-chart-container {
+      margin: 10px 0;
+      width: 45%;  /* Two per row */
+      height: 120px; /* Fixed height */
+    }
+  }
+  
