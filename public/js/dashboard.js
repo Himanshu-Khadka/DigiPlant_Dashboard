@@ -111,7 +111,7 @@ async function updateDashboard() {
       dashboard.appendChild(card);
 
       // Normalize sensor values to percentages.
-      let tempPct = Math.min(100, (data.temperature / 50) * 100); // Assuming 0–50°C scale.
+      let tempPct = Math.min(100, data.temperature ); // Assuming 0–50°C scale.
       let humPct = Math.min(100, data.humidity);
       let soilPct = Math.min(100, ((1023 - data.soil) / 1023) * 100); // Inverted sensor reading.
       let ldrPct = Math.min(100, (data.ldr / 1023) * 100);
