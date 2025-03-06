@@ -1,46 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>DigiPlant Dashboard</title>
-  <!-- Import Orbitron font for a futuristic look -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <a class="navbar-brand" href="#">DigiPlant</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" 
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="#">Home<span class="sr-only">(current)</span></a>
-        </li>
-      </ul>
-    </div>
-  </nav>
-  
-  <div class="container my-4">
-    <h1 class="text-center mb-4">Plant Sensor Dashboard</h1>
-    <div id="dashboard" class="card-container">
-      <!-- Sensor cards will be injected here dynamically -->
-    </div>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <title>DigiPlant Dashboard</title>
+    <!-- Orbitron font for that futuristic look -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css" />
+    <!-- React and ReactDOM from CDN -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <!-- Babel for on-the-fly JSX compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <!-- NAVBAR (using your current custom styles) -->
+    <nav class="custom-nav">
+      <div class="nav-left">
+        <svg
+          width="40"
+          height="40"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#38B2AC"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="leaf-icon"
+        >
+          <path
+            d="M12 2C12 2 4 9 4 16.5C4 20.6421 7.35786 24 11.5 24C15.6421 24 19 20.6421 19 16.5C19 9 12 2 12 2Z"
+          ></path>
+          <path d="M12 2L12 9.5"></path>
+        </svg>
+        <h1 class="nav-title">DigiPlant</h1>
+      </div>
+      <div class="nav-right">
+        <button class="nav-btn">Dashboard</button>
+        <button class="nav-btn">Devices</button>
+      </div>
+    </nav>
 
-  <!-- jQuery, Popper, and Bootstrap JS for navbar functionality -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
-  <!-- Custom JS -->
-  <script src="/js/dashboard.js"></script>
-</body>
+    <!-- React will mount the dashboard here -->
+    <div id="root"></div>
+
+    <!-- Inline React Code -->
+    <script type="text/babel">
+      const { useState } = React;
+
+      // Sensor data (this would normally come from an API)
+      const INITIAL_SENSOR_DATA = [
+        {
+          id: 1,
+          plantName: 'Monstera Deliciosa',
+          humidity: 65,
+          temperature: 22,
+          lightLevel: 'Medium',
+          status: 'Healthy'
+        },
+        {
+          id: 2,
+          plantName: 'Snake Plant',
+          humidity: 40,
+          temperature: 25,
+          lightLevel: 'Low',
+          status: 'Needs Attention'
+        }
+      ];
+
+      function DigiPlantDashboard() {
+        const [sensorData, setSensorData] = useState(INITIAL_SENSOR_DATA);
+
+        // For simplicity, using emojis for icons instead of lucide-react
+        const renderSensorIcon = (status) => {
+          if (status === 'Healthy') {
+            return <span className="w-12 h-12 mb-3 text-green-500">🍃</span>;
+          } else if (status === 'Needs Attention') {
+            return <span className="w-12 h-12 mb-3 text-yellow-500">💧</span>;
+          } else {
+            return <span className="w-12 h-12 mb-3 text-gray-500">🍃</span>;
+          }
+        };
+
+        return (
+          <div className="dashboard-container" style={{ padding: '1rem' }}>
+            <h2 className="dashboard-title" style={{ textAlign: 'center', marginBottom: '2rem', color: '#4fd1c5' }}>
+              Plant Sensor Dashboard
+            </h2>
+            <div className="card-grid">
+              {sensorData.map((sensor) => (
+                <div key={sensor.id} className="card">
+                  <div className="card-header">
+                    {renderSensorIcon(sensor.status)}
+                    <div className="card-header-info">
+                      <h3>{sensor.plantName}</h3>
+                      <p>{sensor.status}</p>
+                    </div>
+                  </div>
+                  <div className="card-body">
+                    <div className="metrics-grid">
+                      <div className="metric-item">
+                        <span role="img" aria-label="temperature">🌡️</span>
+                        <span>{sensor.temperature}°C</span>
+                      </div>
+                      <div className="metric-item">
+                        <span role="img" aria-label="humidity">💧</span>
+                        <span>{sensor.humidity}%</span>
+                      </div>
+                      <div className="metric-item">
+                        <span role="img" aria-label="light">☀️</span>
+                        <span>{sensor.lightLevel}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      }
+
+      // Mount the React component to the root div
+      ReactDOM.render(<DigiPlantDashboard />, document.getElementById('root'));
+    </script>
+  </body>
 </html>
