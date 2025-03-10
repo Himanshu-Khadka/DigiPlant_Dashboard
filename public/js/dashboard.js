@@ -1,5 +1,8 @@
 // public/js/dashboard.js
 
+// Global storage for chart instances.
+let charts = {};
+
 // Force Chart.js to use a devicePixelRatio of 1 to prevent canvas scaling issues.
 Chart.defaults.global.devicePixelRatio = 1;
 
@@ -34,8 +37,11 @@ Chart.pluginService.register({
 
 // Function to create a doughnut chart with center text.
 function createDoughnutChart(canvasId, percentage) {
+  // Get canvas context.
   let ctx = document.getElementById(canvasId).getContext('2d');
-  return new Chart(ctx, {
+
+  // Create the chart.
+  let chart = new Chart(ctx, {
     type: 'doughnut',
     data: {
       datasets: [{
@@ -49,8 +55,9 @@ function createDoughnutChart(canvasId, percentage) {
       tooltips: { enabled: false },
       hover: { mode: null },
       animation: {
+        duration: 500,         // Fixed, shorter duration.
         animateRotate: true,
-        animateScale: true
+        animateScale: false    // Disable scaling animation.
       },
       responsive: true,
       maintainAspectRatio: false,
@@ -62,30 +69,36 @@ function createDoughnutChart(canvasId, percentage) {
       }
     }
   });
+
+  // Store the chart instance so we can destroy it later.
+  charts[canvasId] = chart;
+  return chart;
 }
 
 // Function to create a card for a device with sensor charts laid out horizontally.
 function createDeviceCard(deviceId, data) {
   let card = document.createElement('div');
   card.className = 'card';
+  card.id = `card-${deviceId}`;
+  // Explicit width and height set on canvas elements.
   card.innerHTML = `
     <div class="card-header">Device: ${deviceId}</div>
     <div class="card-body">
-      <div class="sensor-row">
+      <div class="sensor-row" style="display: flex; flex-direction: row; justify-content: space-around; align-items: center;">
         <div class="sensor-chart-container">
-          <canvas id="tempChart-${deviceId}"></canvas>
+          <canvas id="tempChart-${deviceId}" width="200" height="200"></canvas>
           <p>Temp</p>
         </div>
         <div class="sensor-chart-container">
-          <canvas id="humChart-${deviceId}"></canvas>
+          <canvas id="humChart-${deviceId}" width="200" height="200"></canvas>
           <p>Hum</p>
         </div>
         <div class="sensor-chart-container">
-          <canvas id="soilChart-${deviceId}"></canvas>
+          <canvas id="soilChart-${deviceId}" width="200" height="200"></canvas>
           <p>Soil</p>
         </div>
         <div class="sensor-chart-container">
-          <canvas id="ldrChart-${deviceId}"></canvas>
+          <canvas id="ldrChart-${deviceId}" width="200" height="200"></canvas>
           <p>Light</p>
         </div>
       </div>
@@ -103,25 +116,40 @@ async function updateDashboard() {
     const response = await fetch('/api/devices');
     const devices = await response.json();
     const dashboard = document.getElementById('dashboard');
-    dashboard.innerHTML = ''; // Clear previous content
-
+    
+    // Iterate through devices from API response.
     for (const device in devices) {
       const data = devices[device];
-      let card = createDeviceCard(device, data);
-      dashboard.appendChild(card);
-
+      let card = document.getElementById(`card-${device}`);
+      if (!card) {
+         // Create and append new card if it doesn't exist.
+         card = createDeviceCard(device, data);
+         dashboard.appendChild(card);
+      } else {
+         // Update existing card's footer if necessary.
+         card.querySelector('.card-footer').innerHTML = `Updated: ${data.updatedAt}`;
+      }
+      
+      // Destroy any existing chart instances for this device.
+      ["tempChart", "humChart", "soilChart", "ldrChart"].forEach(metric => {
+         let canvasId = `${metric}-${device}`;
+         if (charts[canvasId]){
+            charts[canvasId].destroy();
+         }
+      });
+      
       // Normalize sensor values to percentages.
-      let tempPct = Math.min(100, data.temperature ); // Assuming 0–50°C scale.
+      let tempPct = Math.min(100, data.temperature); // Assuming 0–50°C scale.
       let humPct = Math.min(100, data.humidity);
       let soilPct = Math.min(100, ((1023 - data.soil) / 1023) * 100); // Inverted sensor reading.
       let ldrPct = Math.min(100, (data.ldr / 1023) * 100);
-
-      // Delay slightly to ensure canvases are rendered.
+      
+      // Recreate charts with a slight delay to ensure canvases are rendered.
       setTimeout(() => {
-        createDoughnutChart(`tempChart-${device}`, tempPct);
-        createDoughnutChart(`humChart-${device}`, humPct);
-        createDoughnutChart(`soilChart-${device}`, soilPct);
-        createDoughnutChart(`ldrChart-${device}`, ldrPct);
+         createDoughnutChart(`tempChart-${device}`, tempPct);
+         createDoughnutChart(`humChart-${device}`, humPct);
+         createDoughnutChart(`soilChart-${device}`, soilPct);
+         createDoughnutChart(`ldrChart-${device}`, ldrPct);
       }, 100);
     }
   } catch (err) {

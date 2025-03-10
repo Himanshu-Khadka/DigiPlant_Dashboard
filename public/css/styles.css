@@ -1,132 +1,157 @@
-/* public/css/styles.css */
-
+/* Use Orbitron for that futuristic look */
 body {
-    background-color: #2F2F2F;
-    font-family: 'Orbitron', sans-serif;
-    color: #FFF5E4;
-    margin: 0;
-    padding: 0;
-    transition: background 0.5s ease;
-  }
-  
-  h1 {
-    font-weight: 700;
-    color: #C1D8C3;
-  }
-  
-  /* Navbar styling */
-  .navbar {
-    background-color: #6A9C89;
-  }
-  .navbar-brand {
-    font-size: 1.8rem;
-    font-weight: 700;
-  }
-  
-  /* Card container: vertical stack, centered */
-  .card-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px;
-    align-items: center;
-  }
-  
-  /* Card styling: dark mode, 90% width */
-  .card {
-    width: 90%;
-    background-color: #333333;
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    transition: transform 0.3s ease;
-    color: #FFF5E4;
-    opacity: 0;
-    animation: fadeIn 0.5s forwards;
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-  }
-  
-  @keyframes fadeIn {
-    to { opacity: 1; }
-  }
-  
-  /* Card header (modern, no image) */
-  .card-header {
-    background: linear-gradient(135deg, #FFA725, #C1D8C3);
-    color: #FFF5E4;
-    font-weight: bold;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-    padding: 15px 20px;
-    text-align: left;
-    font-size: 1.2rem;
-  }
-  
-  .card-body {
-    padding: 15px;
-  }
-  
-  .card-footer {
-    background-color: #6A9C89;
-    color: #FFF5E4;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
-    padding: 12px 20px;
-    text-align: center;
-    font-size: 0.9rem;
-  }
-  
-  /* Sensor row: horizontal layout inside card */
-  .sensor-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    margin-top: 15px;
-  }
-  
-  /* Sensor chart container: fixed size to prevent canvas scaling issues */
-  .sensor-chart-container {
-    width: 120px;
-    height: 120px;
-    margin: 0 8px;
-    position: relative;
-  }
-  
-  /* Ensure canvases scale responsively */
-  .sensor-chart-container canvas {
-    width: 100% !important;
-    height: auto !important;
-  }
-  
-  /* Sensor labels */
-  .sensor-chart-container p {
-    margin-top: 8px;
-    font-size: 0.9rem;
-    color: #FFF5E4;
-  }
-  
-  /* Responsive adjustments for mobile devices */
-  @media (max-width: 768px) {
-    .card-container {
-      width: 100%;
-      padding: 10px;
-    }
-    .card {
-      width: 95%;
-    }
-    /* On mobile, allow the sensor row to wrap into two columns */
-    .sensor-row {
-      flex-wrap: wrap;
-      justify-content: space-around;
-    }
-    .sensor-chart-container {
-      margin: 10px 0;
-      width: 45%;  /* Two per row */
-      height: 120px; /* Fixed height */
-    }
-  }
-  
+  margin: 0;
+  padding: 0;
+  font-family: 'Orbitron', sans-serif;
+  /* Gradient background from #1E2432 to #2F3B5A */
+  background: linear-gradient(to bottom right, #1E2432, #2F3B5A);
+  color: #F0F4F8;
+  min-height: 100vh;
+}
+
+/* NAVBAR STYLES */
+.custom-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2a3647;
+  padding: 1rem 2rem;
+  margin-bottom: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.leaf-icon {
+  flex-shrink: 0;
+}
+
+.nav-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4fd1c5; /* #38B2AC is teal-400, close enough */
+  margin: 0;
+}
+
+.nav-right {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-btn {
+  padding: 0.5rem 1rem;
+  border: 2px solid #4fd1c5;
+  color: #4fd1c5;
+  background-color: transparent;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.nav-btn:hover {
+  background-color: rgba(79, 209, 197, 0.15);
+}
+
+/* DASHBOARD CONTAINER */
+.dashboard-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* CARD GRID - replicates 'grid md:grid-cols-2 gap-8' in Tailwind */
+.card-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* CARD COMPONENT */
+.card {
+  background-color: #2a3647;
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease;
+  /* Add this to ensure the card scales from its center */
+  transform-origin: center center;
+}
+
+/* .card:hover {
+  transform: scale(1.02);
+} */
+
+/* CARD HEADER - gradient from teal-600 to blue-600 */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  background: linear-gradient(to right, #319795, #3182CE);
+  padding: 1rem;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+.card-header p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* CARD BODY */
+.card-body {
+  padding: 1.5rem;
+}
+
+/* The sensor metrics layout, two columns (like grid-cols-2 gap-6) */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.metric-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.metric-item p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* CARD FOOTER */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1e2432;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: #888;
+}
+
+/* PROGRESS BAR STYLES
+   If you want the progress bar style like <Progress value={} /> in Tailwind,
+   you can manually replicate it with an inner bar. For simplicity, we'll keep your Chart.js approach.
+*/
+
+/* MISC UTILITY (like selection:bg-teal-500 selection:text-white ) */
+::selection {
+  background-color: #38b2ac;
+  color: #fff;
+}
