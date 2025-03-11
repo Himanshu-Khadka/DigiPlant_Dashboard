@@ -1,50 +1,63 @@
-// Sample device data - in a real app, this would come from an API
-const devices = [
-    { id: 1, name: 'Plant Sensor 1', status: 'up' },
-    { id: 2, name: 'Moisture Monitor 2', status: 'down' },
-    { id: 3, name: 'Temperature Sensor 3', status: 'up' },
-    { id: 4, name: 'Light Sensor 4', status: 'up' },
-    { id: 5, name: 'Humidity Monitor 5', status: 'down' }
-];
+// Function to check if a device is online (has sent data in last 2 minutes)
+function isDeviceOnline(lastUpdateTime) {
+    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+    const lastUpdate = new Date(lastUpdateTime);
+    return lastUpdate > twoMinutesAgo;
+}
 
 // Function to create a device card
-function createDeviceCard(device) {
+function createDeviceCard(deviceName, data) {
     const deviceCard = document.createElement('div');
     deviceCard.className = 'device-card';
 
-    const statusClass = device.status === 'up' ? 'status-up' : 'status-down';
-    const statusText = device.status === 'up' ? 'Online' : 'Offline';
+    const isOnline = isDeviceOnline(data.updatedAt);
+    const statusClass = isOnline ? 'status-up' : 'status-down';
+    const statusText = isOnline ? 'Online' : 'Offline';
 
     deviceCard.innerHTML = `
         <div class="device-info">
-            <h3 class="device-name">${device.name}</h3>
+            <h3 class="device-name">${deviceName}</h3>
             <div class="device-status ${statusClass}">
                 <span class="status-dot"></span>
                 <span class="status-text">${statusText}</span>
             </div>
+        </div>
+        <div class="last-update">
+            Last Update: ${new Date(data.updatedAt).toLocaleString()}
         </div>
     `;
 
     return deviceCard;
 }
 
-// Function to initialize the device grid
-function initializeDeviceGrid() {
-    const deviceGrid = document.getElementById('device');
-    if (!deviceGrid) return;
+// Function to fetch and display devices
+async function updateDeviceGrid() {
+    try {
+        const response = await fetch('/api/devices');
+        const devices = await response.json();
+        
+        const deviceGrid = document.getElementById('device');
+        if (!deviceGrid) return;
 
-    // Clear existing content
-    deviceGrid.innerHTML = '';
+        // Clear existing content
+        deviceGrid.innerHTML = '';
 
-    // Add devices to the grid
-    devices.forEach(device => {
-        const card = createDeviceCard(device);
-        deviceGrid.appendChild(card);
-    });
+        // Add devices to the grid
+        Object.entries(devices).forEach(([deviceName, data]) => {
+            const card = createDeviceCard(deviceName, data);
+            deviceGrid.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error('Error fetching device data:', error);
+    }
 }
 
-// Initialize when the DOM is loaded
-document.addEventListener('DOMContentLoaded', initializeDeviceGrid);
+// Initialize when the DOM is loaded and update every 30 seconds
+document.addEventListener('DOMContentLoaded', () => {
+    updateDeviceGrid();
+    setInterval(updateDeviceGrid, 30000);
+});
 
 // Add necessary styles
 const styles = `
@@ -73,6 +86,7 @@ const styles = `
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 0.5rem;
     }
 
     .device-name {
@@ -109,6 +123,13 @@ const styles = `
     }
 
     .status-text {
+        font-family: 'Orbitron', sans-serif;
+    }
+
+    .last-update {
+        color: #666;
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
         font-family: 'Orbitron', sans-serif;
     }
 `;
