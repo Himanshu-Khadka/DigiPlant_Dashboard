@@ -44,6 +44,16 @@ body {
 }
 
 .nav-btn {
+  /* padding: 0.5rem 1rem; */
+  /* border: 2px solid #4fd1c5; */
+  color: #4fd1c5;
+  background-color: transparent;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+#nav-btn{
   padding: 0.5rem 1rem;
   border: 2px solid #4fd1c5;
   color: #4fd1c5;
