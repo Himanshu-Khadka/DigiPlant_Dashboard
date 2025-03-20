@@ -219,6 +219,7 @@ body {
   /* Show hamburger on mobile */
   .hamburger-menu {
     display: flex;
+    z-index: 101; /* Ensure it's above other elements */
   }
   
   /* Hide nav buttons by default on mobile */
@@ -229,7 +230,9 @@ body {
     right: 0;
     left: 0;
     background-color: #2a3647;
-    flex-direction: column;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    justify-content: center;
     width: 100%;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
     padding: 1rem;
@@ -242,6 +245,14 @@ body {
     display: flex;
   }
   
+  /* Nav button styling - overwrite conflicting rules */
+  .nav-btn, #nav-btn {
+    width: auto !important; /* Use !important to override conflicting rules */
+    margin: 0.5rem 1rem !important;
+    min-width: 120px; /* Ensure buttons have consistent width */
+    text-align: center;
+  }
+  
   /* Container adjustments */
   .dashboard-container {
     padding: 0 0.5rem;
@@ -252,16 +263,15 @@ body {
     padding: 1rem;
   }
   
-  /* Change sensor row to column for mobile */
+  /* Change sensor row for mobile */
   .sensor-row {
-    flex-direction: column !important;
-    gap: 1.5rem;
+    flex-wrap: wrap; /* For mobile - wrap to two per row */
+    flex-direction: row !important;
   }
   
   .sensor-chart-container {
-    width: 100% !important;
-    max-width: 200px;
-    margin: 0 auto;
+    width: calc(50% - 0.5rem) !important; /* Two per row with gap */
+    max-width: none; /* Remove conflicting max-width */
   }
   
   /* Health indicator styles for mobile */
