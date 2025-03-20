@@ -82,7 +82,7 @@ function createDeviceCard(deviceId, data) {
   card.id = `card-${deviceId}`;
   // Explicit width and height set on canvas elements.
   card.innerHTML = `
-    <div class="card-header">Device: ${deviceId}</div>
+    <div class="card-header"><h3>${deviceId}</h3></div>
     <div class="card-body">
       <div class="sensor-row" style="display: flex; flex-direction: row; justify-content: space-around; align-items: center;">
         <div class="sensor-chart-container">
