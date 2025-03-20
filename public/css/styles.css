@@ -197,10 +197,51 @@ body {
   font-family: 'Orbitron', sans-serif;
 }
 
-/* Add these media queries at the end of your CSS file */
+/* Hamburger menu styles - Fix for visibility on mobile */
+.hamburger-menu {
+  display: none; /* Hidden by default on all screens */
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
+  cursor: pointer;
+}
+
+.hamburger-line {
+  width: 100%;
+  height: 3px;
+  background-color: #4fd1c5;
+  transition: all 0.3s ease;
+}
 
 /* Responsive styles for mobile devices */
 @media screen and (max-width: 768px) {
+  /* Show hamburger on mobile */
+  .hamburger-menu {
+    display: flex;
+  }
+  
+  /* Hide nav buttons by default on mobile */
+  .nav-right {
+    display: none;
+    position: absolute;
+    top: 70px;
+    right: 0;
+    left: 0;
+    background-color: #2a3647;
+    flex-direction: column;
+    width: 100%;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    z-index: 100;
+    border-radius: 0 0 1rem 1rem;
+    align-items: center;
+  }
+  
+  .nav-right.open {
+    display: flex;
+  }
+  
   /* Container adjustments */
   .dashboard-container {
     padding: 0 0.5rem;
@@ -228,55 +269,105 @@ body {
     padding: 0.25rem 1rem;
     font-size: 0.8rem;
   }
-  
-  /* Hamburger menu styles */
-  .nav-right {
-    display: none;
-    position: absolute;
-    top: 70px;
-    right: 0;
-    background-color: #2a3647;
-    flex-direction: column;
+}
+
+/* Add these sensor grid styles for mobile */
+.sensor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.sensor-chart-container {
+  position: relative;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.sensor-chart-container p {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.9rem;
+}
+
+.health-emoji {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  z-index: 10;
+}
+
+/* Mobile nav button styles */
+@media screen and (max-width: 768px) {
+  .nav-btn {
     width: 100%;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
-    padding: 1rem;
-    z-index: 100;
-    border-radius: 0 0 1rem 1rem;
+    margin: 0.5rem 0;
   }
   
-  .nav-right.open {
-    display: flex;
-  }
-  
-  .hamburger-menu {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30px;
-    height: 21px;
-    cursor: pointer;
-  }
-  
-  .hamburger-line {
+  #nav-btn {
     width: 100%;
-    height: 3px;
-    background-color: #4fd1c5;
-    transition: all 0.3s ease;
   }
   
-  /* Hide hamburger on larger screens */
-  @media screen and (min-width: 769px) {
-    .hamburger-menu {
-      display: none;
-    }
-    
-    .nav-right {
-      display: flex;
-      position: static;
-      width: auto;
-      box-shadow: none;
-      background-color: transparent;
-      padding: 0;
-    }
+  /* Better spacing for cards on mobile */
+  .card {
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Clearer chart labels */
+  .sensor-chart-container p {
+    font-weight: bold;
+    color: #cbd5e0;
+  }
+}
+
+/* Fix the sensor layout on mobile */
+.sensor-container {
+  margin-top: 1.5rem;
+}
+
+.sensor-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.desktop-row {
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.sensor-chart-container {
+  position: relative;
+  text-align: center;
+  width: 48%;
+}
+
+.sensor-chart-container canvas {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 120px;
+}
+
+.desktop-row .sensor-chart-container {
+  width: 23%;
+}
+
+.desktop-row .sensor-chart-container canvas {
+  max-height: 200px;
+}
+
+@media screen and (max-width: 768px) {
+  /* Make sure cards don't keep expanding */
+  .card {
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  
+  /* Fix for continuous scrolling - set fixed heights */
+  canvas {
+    max-height: 120px;
   }
 }

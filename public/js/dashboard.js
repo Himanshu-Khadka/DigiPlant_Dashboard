@@ -157,7 +157,22 @@ function createDoughnutChart(canvasId, percentage, parameterType, value) {
   return chart;
 }
 
-// Modify the createDeviceCard function to include a health chart
+// Fix the handleResize function to prevent continuous scrolling
+function handleResize() {
+  // Use a debounce to prevent too many updates
+  if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
+  
+  this.resizeTimeout = setTimeout(() => {
+    // Don't trigger a full redraw - just update chart dimensions
+    Object.keys(charts).forEach(chartId => {
+      if (charts[chartId]) {
+        charts[chartId].resize();
+      }
+    });
+  }, 200); // 200ms debounce
+}
+
+// Modify the createDeviceCard function to fix the chart layout
 function createDeviceCard(deviceId, data) {
   // Calculate plant health
   const health = calculatePlantHealth(data);
@@ -165,15 +180,15 @@ function createDeviceCard(deviceId, data) {
   // Select appropriate emoji based on health status
   let healthEmoji = '';
   if (health.score > 80) {
-    healthEmoji = '🌱'; // Excellent - sprouting plant
+    healthEmoji = '🌱';
   } else if (health.score > 60) {
-    healthEmoji = '🌿'; // Good - healthy plant
+    healthEmoji = '🌿';
   } else if (health.score > 40) {
-    healthEmoji = '🍃'; // Fair - leaves
+    healthEmoji = '🍃';
   } else if (health.score > 20) {
-    healthEmoji = '🍂'; // Poor - fallen leaves
+    healthEmoji = '🍂';
   } else {
-    healthEmoji = '🥀'; // Critical - wilted flower
+    healthEmoji = '🥀';
   }
   
   // Check if we're on mobile
@@ -188,33 +203,37 @@ function createDeviceCard(deviceId, data) {
     card.innerHTML = `
       <div class="card-header"><h3>${deviceId}</h3></div>
       <div class="card-body">
-        <div class="plant-health" style="text-align: center; margin-bottom: 1.5rem;">
-          <div class="health-chart-container" style="width: 120px; height: 120px; margin: 0 auto;">
-            <canvas id="healthChart-${deviceId}" width="120" height="120"></canvas>
-            <div class="health-emoji" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem;">
-              ${healthEmoji}
-            </div>
+        <div class="plant-health">
+          <div class="health-label">
+            Health ${healthEmoji}
           </div>
-          <div class="health-indicator" style="display: inline-block; padding: 0.5rem 1.5rem; border-radius: 1rem; background-color: ${health.color}20; color: ${health.color}; font-weight: bold; margin: 0.5rem 0;">
+          <div class="health-indicator" style="background-color: ${health.color}20; color: ${health.color};">
             <span>${health.status} (${health.score}%)</span>
           </div>
+          <div class="health-bar">
+            <div style="height: 100%; width: ${health.score}%; background-color: ${health.color};"></div>
+          </div>
         </div>
-        <div class="sensor-row" style="display: flex; flex-direction: row; justify-content: space-around; align-items: center;">
-          <div class="sensor-chart-container" style="width: 100%;">
-            <canvas id="tempChart-${deviceId}" width="100%" height="80"></canvas>
-            <p>Temperature</p>
+        <div class="sensor-container">
+          <div class="sensor-row">
+            <div class="sensor-chart-container">
+              <canvas id="tempChart-${deviceId}"></canvas>
+              <p>Temp</p>
+            </div>
+            <div class="sensor-chart-container">
+              <canvas id="humChart-${deviceId}"></canvas>
+              <p>Humidity</p>
+            </div>
           </div>
-          <div class="sensor-chart-container" style="width: 100%;">
-            <canvas id="humChart-${deviceId}" width="100%" height="80"></canvas>
-            <p>Humidity</p>
-          </div>
-          <div class="sensor-chart-container" style="width: 100%;">
-            <canvas id="soilChart-${deviceId}" width="100%" height="80"></canvas>
-            <p>Soil Moisture</p>
-          </div>
-          <div class="sensor-chart-container" style="width: 100%;">
-            <canvas id="ldrChart-${deviceId}" width="100%" height="80"></canvas>
-            <p>Light</p>
+          <div class="sensor-row">
+            <div class="sensor-chart-container">
+              <canvas id="soilChart-${deviceId}"></canvas>
+              <p>Soil</p>
+            </div>
+            <div class="sensor-chart-container">
+              <canvas id="ldrChart-${deviceId}"></canvas>
+              <p>Light</p>
+            </div>
           </div>
         </div>
       </div>
@@ -227,32 +246,32 @@ function createDeviceCard(deviceId, data) {
     card.innerHTML = `
       <div class="card-header"><h3>${deviceId}</h3></div>
       <div class="card-body">
-        <div class="plant-health" style="text-align: center; margin-bottom: 1.5rem;">
-          <div class="health-label" style="font-size: 1.2rem; margin-bottom: 0.5rem; color: #fff;">
+        <div class="plant-health">
+          <div class="health-label">
             Health ${healthEmoji}
           </div>
-          <div class="health-indicator" style="display: inline-block; padding: 0.5rem 1.5rem; border-radius: 1rem; background-color: ${health.color}20; color: ${health.color}; font-weight: bold; margin-bottom: 0.5rem;">
+          <div class="health-indicator" style="background-color: ${health.color}20; color: ${health.color};">
             <span>${health.status} (${health.score}%)</span>
           </div>
-          <div class="health-bar" style="height: 8px; width: 100%; background-color: #333; border-radius: 4px; overflow: hidden;">
+          <div class="health-bar">
             <div style="height: 100%; width: ${health.score}%; background-color: ${health.color};"></div>
           </div>
         </div>
-        <div class="sensor-row" style="display: flex; flex-direction: row; justify-content: space-around; align-items: center;">
+        <div class="sensor-row desktop-row">
           <div class="sensor-chart-container">
-            <canvas id="tempChart-${deviceId}" width="200" height="200"></canvas>
+            <canvas id="tempChart-${deviceId}"></canvas>
             <p>Temp</p>
           </div>
           <div class="sensor-chart-container">
-            <canvas id="humChart-${deviceId}" width="200" height="200"></canvas>
+            <canvas id="humChart-${deviceId}"></canvas>
             <p>Hum</p>
           </div>
           <div class="sensor-chart-container">
-            <canvas id="soilChart-${deviceId}" width="200" height="200"></canvas>
+            <canvas id="soilChart-${deviceId}"></canvas>
             <p>Soil</p>
           </div>
           <div class="sensor-chart-container">
-            <canvas id="ldrChart-${deviceId}" width="200" height="200"></canvas>
+            <canvas id="ldrChart-${deviceId}"></canvas>
             <p>Light</p>
           </div>
         </div>
@@ -266,61 +285,103 @@ function createDeviceCard(deviceId, data) {
   return card;
 }
 
-// Update the updateDashboard function to create the health chart on mobile
+// Update the updateDashboard function to prevent continuous reloading
 async function updateDashboard() {
   try {
     const response = await fetch('/api/devices');
     const devices = await response.json();
     const dashboard = document.getElementById('dashboard');
     
+    if (!dashboard) return; // Safety check
+    
     // Check if we're on mobile
     const isMobile = window.innerWidth < 768;
+    
+    // First, identify devices that no longer exist and remove their cards
+    const currentDeviceIds = Object.keys(devices);
+    const existingCards = dashboard.querySelectorAll('.card');
+    
+    existingCards.forEach(card => {
+      const cardId = card.id;
+      if (cardId && cardId.startsWith('card-')) {
+        const deviceId = cardId.replace('card-', '');
+        if (!currentDeviceIds.includes(deviceId)) {
+          // Device no longer exists in data, remove its card
+          dashboard.removeChild(card);
+        }
+      }
+    });
     
     // Iterate through devices from API response
     for (const device in devices) {
       const data = devices[device];
       let card = document.getElementById(`card-${device}`);
+      
       if (!card) {
          // Create and append new card if it doesn't exist
          card = createDeviceCard(device, data);
          dashboard.appendChild(card);
       } else {
-         // Update existing card's content to refresh health indicator and status
-         const updatedCard = createDeviceCard(device, data);
-         card.innerHTML = updatedCard.innerHTML;
+         // Just update the card's content without full recreation
+         const statusElement = card.querySelector('.health-indicator');
+         const healthBar = card.querySelector('.health-bar div');
+         const updatedTime = card.querySelector('.card-footer');
+         
+         if (statusElement && healthBar && updatedTime) {
+           const health = calculatePlantHealth(data);
+           statusElement.innerHTML = `<span>${health.status} (${health.score}%)</span>`;
+           statusElement.style.backgroundColor = `${health.color}20`;
+           statusElement.style.color = health.color;
+           healthBar.style.width = `${health.score}%`;
+           healthBar.style.backgroundColor = health.color;
+           updatedTime.innerHTML = `Updated: ${data.updatedAt}`;
+         }
       }
       
-      // Destroy any existing chart instances for this device
+      // Only recreate charts when needed
       const metrics = ["tempChart", "humChart", "soilChart", "ldrChart"];
-      if (isMobile) metrics.push("healthChart");
-      
-      metrics.forEach(metric => {
-         let canvasId = `${metric}-${device}`;
-         if (charts[canvasId]){
-            charts[canvasId].destroy();
-         }
-      });
       
       // Normalize sensor values to percentages
-      let tempPct = Math.min(100, data.temperature); // Assuming 0–50°C scale
+      let tempPct = Math.min(100, data.temperature);
       let humPct = Math.min(100, data.humidity);
-      let soilPct = Math.min(100, ((1023 - data.soil) / 1023) * 100); // Inverted sensor reading
+      let soilPct = Math.min(100, ((1023 - data.soil) / 1023) * 100);
       let ldrPct = Math.min(100, (data.ldr / 1023) * 100);
-      
-      // Calculate health for the health chart
-      const health = calculatePlantHealth(data);
       
       // Recreate charts with a slight delay to ensure canvases are rendered
       setTimeout(() => {
-         createDoughnutChart(`tempChart-${device}`, tempPct, 'tempChart', data.temperature);
-         createDoughnutChart(`humChart-${device}`, humPct, 'humChart', data.humidity);
-         createDoughnutChart(`soilChart-${device}`, soilPct, 'soilChart', data.soil);
-         createDoughnutChart(`ldrChart-${device}`, ldrPct, 'ldrChart', data.ldr);
-         
-         // Create health chart for mobile
-         if (isMobile) {
-           createDoughnutChart(`healthChart-${device}`, health.score, 'healthChart', health.score);
-         }
+        try {
+          // Only create charts if they don't exist or need updating
+          if (!charts[`tempChart-${device}`]) {
+            createDoughnutChart(`tempChart-${device}`, tempPct, 'tempChart', data.temperature);
+          } else {
+            // Update existing chart data
+            charts[`tempChart-${device}`].data.datasets[0].data = [tempPct, 100 - tempPct];
+            charts[`tempChart-${device}`].update();
+          }
+          
+          if (!charts[`humChart-${device}`]) {
+            createDoughnutChart(`humChart-${device}`, humPct, 'humChart', data.humidity);
+          } else {
+            charts[`humChart-${device}`].data.datasets[0].data = [humPct, 100 - humPct];
+            charts[`humChart-${device}`].update();
+          }
+          
+          if (!charts[`soilChart-${device}`]) {
+            createDoughnutChart(`soilChart-${device}`, soilPct, 'soilChart', data.soil);
+          } else {
+            charts[`soilChart-${device}`].data.datasets[0].data = [soilPct, 100 - soilPct];
+            charts[`soilChart-${device}`].update();
+          }
+          
+          if (!charts[`ldrChart-${device}`]) {
+            createDoughnutChart(`ldrChart-${device}`, ldrPct, 'ldrChart', data.ldr);
+          } else {
+            charts[`ldrChart-${device}`].data.datasets[0].data = [ldrPct, 100 - ldrPct];
+            charts[`ldrChart-${device}`].update();
+          }
+        } catch (error) {
+          console.error('Error updating charts:', error);
+        }
       }, 100);
     }
   } catch (err) {
@@ -328,11 +389,9 @@ async function updateDashboard() {
   }
 }
 
-// Add window resize listener to handle responsive changes
-window.addEventListener('resize', () => {
-  // Refresh the dashboard when window size changes
-  updateDashboard();
-});
+// Replace the existing window resize listener
+window.removeEventListener('resize', updateDashboard);
+window.addEventListener('resize', handleResize);
 
 // Initial update and periodic refresh every 10 seconds.
 updateDashboard();
