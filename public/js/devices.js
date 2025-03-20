@@ -1,3 +1,18 @@
+// Function to toggle hamburger menu
+function setupHamburgerMenu() {
+    const hamburger = document.getElementById('hamburger-menu');
+    const navMenu = document.getElementById('nav-menu');
+    
+    if (hamburger) {
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('open');
+        });
+    }
+}
+
+// Run setup when DOM is loaded
+document.addEventListener('DOMContentLoaded', setupHamburgerMenu);
+
 // Function to check if a device is online (has sent data in last 2 minutes)
 function isDeviceOnline(lastUpdateTime) {
     const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
