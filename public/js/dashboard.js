@@ -77,13 +77,24 @@ function createDoughnutChart(canvasId, percentage) {
 
 // Function to create a card for a device with sensor charts laid out horizontally.
 function createDeviceCard(deviceId, data) {
+  // Calculate plant health
+  const health = calculatePlantHealth(data);
+  
   let card = document.createElement('div');
   card.className = 'card';
   card.id = `card-${deviceId}`;
-  // Explicit width and height set on canvas elements.
+  
   card.innerHTML = `
     <div class="card-header"><h3>${deviceId}</h3></div>
     <div class="card-body">
+      <div class="plant-health" style="text-align: center; margin-bottom: 1.5rem;">
+        <div class="health-indicator" style="display: inline-block; padding: 0.5rem 1.5rem; border-radius: 1rem; background-color: ${health.color}20; color: ${health.color}; font-weight: bold; margin-bottom: 0.5rem;">
+          <span>${health.status} (${health.score}%)</span>
+        </div>
+        <div class="health-bar" style="height: 8px; width: 100%; background-color: #333; border-radius: 4px; overflow: hidden;">
+          <div style="height: 100%; width: ${health.score}%; background-color: ${health.color};"></div>
+        </div>
+      </div>
       <div class="sensor-row" style="display: flex; flex-direction: row; justify-content: space-around; align-items: center;">
         <div class="sensor-chart-container">
           <canvas id="tempChart-${deviceId}" width="200" height="200"></canvas>
@@ -160,3 +171,61 @@ async function updateDashboard() {
 // Initial update and periodic refresh every 10 seconds.
 updateDashboard();
 setInterval(updateDashboard, 10000);
+
+// Function to calculate plant health based on sensor values
+function calculatePlantHealth(data) {
+  // Define ideal ranges for each parameter
+  const idealRanges = {
+    temperature: { min: 18, max: 28 }, // Celsius
+    humidity: { min: 40, max: 70 },    // Percentage
+    soil: { min: 300, max: 700 },      // Soil moisture (0-1023, inverted)
+    ldr: { min: 300, max: 800 }        // Light level (0-1023)
+  };
+
+  // Calculate health score for each parameter (0-100)
+  const tempScore = calculateParameterScore(data.temperature, idealRanges.temperature.min, idealRanges.temperature.max);
+  const humScore = calculateParameterScore(data.humidity, idealRanges.humidity.min, idealRanges.humidity.max);
+  const soilScore = calculateParameterScore(data.soil, idealRanges.soil.min, idealRanges.soil.max);
+  const ldrScore = calculateParameterScore(data.ldr, idealRanges.ldr.min, idealRanges.ldr.max);
+
+  // Overall health is the average of all parameters (0-100)
+  const overallHealth = Math.round((tempScore + humScore + soilScore + ldrScore) / 4);
+  
+  // Return health status and score
+  let status = 'Critical';
+  let color = '#ef4444'; // Red
+  
+  if (overallHealth > 80) {
+    status = 'Excellent';
+    color = '#22c55e'; // Green
+  } else if (overallHealth > 60) {
+    status = 'Good';
+    color = '#84cc16'; // Light green
+  } else if (overallHealth > 40) {
+    status = 'Fair';
+    color = '#facc15'; // Yellow
+  } else if (overallHealth > 20) {
+    status = 'Poor';
+    color = '#f97316'; // Orange
+  }
+  
+  return {
+    score: overallHealth,
+    status: status,
+    color: color
+  };
+}
+
+// Helper function to calculate score for a parameter
+function calculateParameterScore(value, min, max) {
+  if (value < min) {
+    // Below ideal range - score decreases as it gets further from min
+    return Math.max(0, 100 - (min - value) * 5);
+  } else if (value > max) {
+    // Above ideal range - score decreases as it gets further from max
+    return Math.max(0, 100 - (value - max) * 5);
+  } else {
+    // Within ideal range - perfect score
+    return 100;
+  }
+}
