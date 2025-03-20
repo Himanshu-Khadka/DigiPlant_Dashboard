@@ -331,6 +331,8 @@ body {
   display: flex;
   justify-content: space-between;
   margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: nowrap; /* For desktop view - all charts in one row */
 }
 
 .desktop-row {
@@ -342,32 +344,53 @@ body {
 .sensor-chart-container {
   position: relative;
   text-align: center;
-  width: 48%;
+  width: 23%; /* For desktop - roughly 1/4 of the space */
+  margin-bottom: 1rem;
 }
 
 .sensor-chart-container canvas {
   width: 100% !important;
   height: auto !important;
-  max-height: 120px;
+  aspect-ratio: 1/1; /* Keep circular shape */
+  max-width: 150px;
+  margin: 0 auto;
 }
 
 .desktop-row .sensor-chart-container {
-  width: 23%;
+  width: 22%;
 }
 
-.desktop-row .sensor-chart-container canvas {
-  max-height: 200px;
-}
-
+/* Mobile adjustments - ensure donut charts display properly */
 @media screen and (max-width: 768px) {
-  /* Make sure cards don't keep expanding */
   .card {
     margin-bottom: 1.5rem;
     overflow: hidden;
   }
   
-  /* Fix for continuous scrolling - set fixed heights */
-  canvas {
-    max-height: 120px;
+  .sensor-row {
+    flex-wrap: wrap; /* For mobile - wrap to two per row */
+  }
+  
+  .sensor-chart-container {
+    width: calc(50% - 0.5rem); /* Two per row with gap */
+  }
+  
+  /* Set fixed dimensions for charts on mobile */
+  .sensor-chart-container canvas {
+    width: 100px !important;
+    height: 100px !important;
+    display: block;
+    margin: 0 auto;
+  }
+  
+  /* Prevent content from growing too large */
+  .card-body {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  /* Remove conflicting rule */
+  .sensor-row {
+    flex-direction: row !important; /* Override the previous column direction */
   }
 }

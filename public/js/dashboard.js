@@ -50,13 +50,10 @@ Chart.pluginService.register({
   }
 });
 
-// Modify the createDoughnutChart function to be responsive
+// Modify the createDoughnutChart function to always create donut charts
 function createDoughnutChart(canvasId, percentage, parameterType, value) {
   // Get canvas context
   let ctx = document.getElementById(canvasId).getContext('2d');
-  
-  // Check if we're on mobile (viewport width less than 768px)
-  const isMobile = window.innerWidth < 768;
   
   // Determine chart color based on parameter type and value
   let chartColor = '#FFA725'; // Default orange color
@@ -84,73 +81,35 @@ function createDoughnutChart(canvasId, percentage, parameterType, value) {
     chartColor = '#ef4444'; // Red - poor condition
   }
 
-  // Create the appropriate chart based on screen size
-  let chart;
-  
-  if (isMobile && !canvasId.includes('healthChart')) {
-    // Create line chart for mobile
-    chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['', ''],
-        datasets: [{
-          data: [0, percentage],
-          borderColor: chartColor,
-          backgroundColor: chartColor + '20',
-          borderWidth: 4,
-          fill: true,
-          tension: 0.4
-        }]
+  // Always create doughnut chart regardless of screen size
+  let chart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [percentage, 100 - percentage],
+        backgroundColor: [chartColor, '#555555'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      cutoutPercentage: 70,
+      tooltips: { enabled: false },
+      hover: { mode: null },
+      animation: {
+        duration: 500,
+        animateRotate: true,
+        animateScale: false
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: { display: false },
-        scales: {
-          xAxes: [{ display: false }],
-          yAxes: [{ 
-            display: false,
-            ticks: { min: 0, max: 100 }
-          }]
-        },
-        tooltips: { enabled: false },
-        hover: { mode: null },
-        animation: {
-          duration: 1000
-        }
+      responsive: true,
+      maintainAspectRatio: false,
+      center: {
+        text: percentage.toFixed(0) + '%',
+        color: '#FFF',
+        fontStyle: 'Orbitron',
+        sidePadding: 20
       }
-    });
-  } else {
-    // Create doughnut chart for desktop or health indicator
-    chart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        datasets: [{
-          data: [percentage, 100 - percentage],
-          backgroundColor: [chartColor, '#555555'],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        cutoutPercentage: 70,
-        tooltips: { enabled: false },
-        hover: { mode: null },
-        animation: {
-          duration: 500,
-          animateRotate: true,
-          animateScale: false
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-        center: {
-          text: percentage.toFixed(0) + '%',
-          color: '#FFF',
-          fontStyle: 'Orbitron',
-          sidePadding: 20
-        }
-      }
-    });
-  }
+    }
+  });
 
   // Store the chart instance so we can destroy it later
   charts[canvasId] = chart;
@@ -191,80 +150,34 @@ function createDeviceCard(deviceId, data) {
     healthEmoji = '🥀';
   }
   
-  // Check if we're on mobile
-  const isMobile = window.innerWidth < 768;
-  
   let card = document.createElement('div');
   card.className = 'card';
   card.id = `card-${deviceId}`;
   
-  // Different layout for mobile vs desktop
-  if (isMobile) {
-    card.innerHTML = `
-      <div class="card-header"><h3>${deviceId}</h3></div>
-      <div class="card-body">
-        <div class="plant-health">
-          <div class="health-label">
-            Health ${healthEmoji}
-          </div>
-          <div class="health-indicator" style="background-color: ${health.color}20; color: ${health.color};">
-            <span>${health.status} (${health.score}%)</span>
-          </div>
-          <div class="health-bar">
-            <div style="height: 100%; width: ${health.score}%; background-color: ${health.color};"></div>
-          </div>
+  // Same layout for mobile and desktop, just styled differently with CSS
+  card.innerHTML = `
+    <div class="card-header"><h3>${deviceId}</h3></div>
+    <div class="card-body">
+      <div class="plant-health">
+        <div class="health-label">
+          Health ${healthEmoji}
         </div>
-        <div class="sensor-container">
-          <div class="sensor-row">
-            <div class="sensor-chart-container">
-              <canvas id="tempChart-${deviceId}"></canvas>
-              <p>Temp</p>
-            </div>
-            <div class="sensor-chart-container">
-              <canvas id="humChart-${deviceId}"></canvas>
-              <p>Humidity</p>
-            </div>
-          </div>
-          <div class="sensor-row">
-            <div class="sensor-chart-container">
-              <canvas id="soilChart-${deviceId}"></canvas>
-              <p>Soil</p>
-            </div>
-            <div class="sensor-chart-container">
-              <canvas id="ldrChart-${deviceId}"></canvas>
-              <p>Light</p>
-            </div>
-          </div>
+        <div class="health-indicator" style="background-color: ${health.color}20; color: ${health.color};">
+          <span>${health.status} (${health.score}%)</span>
+        </div>
+        <div class="health-bar">
+          <div style="height: 100%; width: ${health.score}%; background-color: ${health.color};"></div>
         </div>
       </div>
-      <div class="card-footer">
-        Updated: ${data.updatedAt}
-      </div>
-    `;
-  } else {
-    // Desktop layout (unchanged)
-    card.innerHTML = `
-      <div class="card-header"><h3>${deviceId}</h3></div>
-      <div class="card-body">
-        <div class="plant-health">
-          <div class="health-label">
-            Health ${healthEmoji}
-          </div>
-          <div class="health-indicator" style="background-color: ${health.color}20; color: ${health.color};">
-            <span>${health.status} (${health.score}%)</span>
-          </div>
-          <div class="health-bar">
-            <div style="height: 100%; width: ${health.score}%; background-color: ${health.color};"></div>
-          </div>
-        </div>
-        <div class="sensor-row desktop-row">
+      <div class="sensor-container">
+        <div class="sensor-row">
           <div class="sensor-chart-container">
             <canvas id="tempChart-${deviceId}"></canvas>
             <p>Temp</p>
           </div>
           <div class="sensor-chart-container">
             <canvas id="humChart-${deviceId}"></canvas>
-            <p>Hum</p>
+            <p>Humidity</p>
           </div>
           <div class="sensor-chart-container">
             <canvas id="soilChart-${deviceId}"></canvas>
@@ -276,11 +189,11 @@ function createDeviceCard(deviceId, data) {
           </div>
         </div>
       </div>
-      <div class="card-footer">
-        Updated: ${data.updatedAt}
-      </div>
-    `;
-  }
+    </div>
+    <div class="card-footer">
+      Updated: ${data.updatedAt}
+    </div>
+  `;
   
   return card;
 }
