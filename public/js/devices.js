@@ -1,3 +1,37 @@
+// Theme toggle functionality
+function setupThemeToggle() {
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = themeToggle.querySelector('.sun-icon');
+  const moonIcon = themeToggle.querySelector('.moon-icon');
+
+  // Set dark mode as default
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcons(savedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcons(newTheme);
+  });
+}
+
+function updateThemeIcons(theme) {
+  const sunIcon = document.querySelector('.sun-icon');
+  const moonIcon = document.querySelector('.moon-icon');
+  
+  if (theme === 'light') {
+    sunIcon.style.display = 'none';
+    moonIcon.style.display = 'block';
+  } else {
+    sunIcon.style.display = 'block';
+    moonIcon.style.display = 'none';
+  }
+}
+
 // Function to toggle hamburger menu
 function setupHamburgerMenu() {
     const hamburger = document.getElementById('hamburger-menu');
@@ -70,6 +104,8 @@ async function updateDeviceGrid() {
 
 // Initialize when the DOM is loaded and update every 30 seconds
 document.addEventListener('DOMContentLoaded', () => {
+    setupHamburgerMenu();
+    setupThemeToggle();
     updateDeviceGrid();
     setInterval(updateDeviceGrid, 30000);
 });

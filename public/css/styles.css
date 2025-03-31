@@ -1,24 +1,75 @@
-/* Use Orbitron for that futuristic look */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Orbitron', sans-serif;
-  /* Gradient background from #1E2432 to #2F3B5A */
-  background: linear-gradient(to bottom right, #1E2432, #2F3B5A);
-  color: #F0F4F8;
-  min-height: 100vh;
+/* Modern CSS Reset and Base Styles */
+:root {
+  /* Dark mode variables (default) */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e0;
+  --accent-primary: #38bdf8;
+  --accent-secondary: #7dd3fc;
+  --card-bg: #1e293b;
+  --card-border: #334155;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --status-good: #22c55e;
+  --status-warning: #f97316;
+  --status-danger: #ef4444;
+  --nav-btn-bg: transparent;
+  --nav-btn-color: #38bdf8;
+  --nav-btn-hover-bg: #38bdf8;
+  --nav-btn-hover-color: #0f172a;
 }
 
-/* NAVBAR STYLES */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Orbitron', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  background: var(--card-bg);
+  border: 2px solid var(--accent-primary);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+}
+
+/* Modern Navbar */
 .custom-nav {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--card-border);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #2a3647;
-  padding: 1rem 2rem;
-  margin-bottom: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
 }
 
 .nav-left {
@@ -27,380 +78,408 @@ body {
   gap: 1rem;
 }
 
-.leaf-icon {
-  flex-shrink: 0;
-}
-
 .nav-title {
+  color: var(--accent-primary);
   font-size: 1.5rem;
   font-weight: 700;
-  color: #4fd1c5; /* #38B2AC is teal-400, close enough */
   margin: 0;
 }
 
 .nav-right {
   display: flex;
   gap: 1rem;
+  align-items: center;
 }
 
 .nav-btn {
-  /* padding: 0.5rem 1rem; */
-  /* border: 2px solid #4fd1c5; */
-  color: #4fd1c5;
-  background-color: transparent;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-#nav-btn{
+  background: var(--nav-btn-bg);
+  border: 2px solid var(--accent-primary);
+  color: var(--nav-btn-color);
   padding: 0.5rem 1rem;
-  border: 2px solid #4fd1c5;
-  color: #4fd1c5;
-  background-color: transparent;
   border-radius: 0.5rem;
-  font-size: 1rem;
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  min-width: 100px;
+  text-align: center;
 }
+
 .nav-btn:hover {
-  background-color: rgba(79, 209, 197, 0.15);
+  background: var(--nav-btn-hover-bg);
+  color: var(--nav-btn-hover-color);
 }
 
-/* DASHBOARD CONTAINER */
-.dashboard-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-/* CARD GRID - replicates 'grid md:grid-cols-2 gap-8' in Tailwind */
-.card-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/* CARD COMPONENT */
+/* Modern Card Design */
 .card {
-  background-color: #2a3647;
-  border: none;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 1rem;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-  transition: transform 0.3s ease;
-  /* Add this to ensure the card scales from its center */
-  transform-origin: center center;
+  box-shadow: 0 4px 6px var(--shadow-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
 }
 
-/* .card:hover {
-  transform: scale(1.02);
-} */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 12px var(--shadow-color);
+}
 
-/* CARD HEADER - gradient from teal-600 to blue-600 */
 .card-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: var(--bg-primary);
+  padding: 1.25rem;
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
-  background: linear-gradient(to right, #319795, #3182CE);
-  padding: 1rem;
 }
 
-.card-header h2 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: #ffffff;
-}
-.card-header p {
-  margin: 0;
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* CARD BODY */
 .card-body {
   padding: 1.5rem;
+  position: relative;
+  z-index: 1;
+  background: var(--card-bg);
 }
 
-/* The sensor metrics layout, two columns (like grid-cols-2 gap-6) */
-.metrics-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-}
-
-.metric-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.metric-item p {
-  margin: 0;
-  font-size: 0.875rem;
-}
-
-/* CARD FOOTER */
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #1e2432;
-  border-bottom-left-radius: 1rem;
-  border-bottom-right-radius: 1rem;
-  padding: 1rem;
-  font-size: 0.875rem;
-  color: #888;
-}
-
-/* PROGRESS BAR STYLES
-   If you want the progress bar style like <Progress value={} /> in Tailwind,
-   you can manually replicate it with an inner bar. For simplicity, we'll keep your Chart.js approach.
-*/
-
-/* MISC UTILITY (like selection:bg-teal-500 selection:text-white ) */
-::selection {
-  background-color: #38b2ac;
-  color: #fff;
-}
-
+/* Modern Health Indicator */
 .plant-health {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .health-indicator {
-  display: inline-block;
-  padding: 0.5rem 1.5rem;
-  border-radius: 1rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  font-family: 'Orbitron', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .health-bar {
   height: 8px;
   width: 100%;
-  background-color: #333;
+  background: var(--bg-secondary);
   border-radius: 4px;
   overflow: hidden;
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
 }
 
-.health-label {
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
-  color: #fff;
+/* Modern Sensor Grid */
+.sensor-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+
+.sensor-container::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+}
+
+.sensor-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 1.5rem;
+  justify-content: center;
+  width: max-content;
+  min-width: 100%;
+}
+
+.sensor-chart-container {
+  text-align: center;
+  padding: 1rem;
+  background: transparent;
+  border-radius: 1rem;
+  transition: transform 0.3s ease;
+  position: relative;
+  flex: 0 0 auto;
+  width: 160px;
+  height: 160px;
+  margin: 0;
+  border: none;
+}
+
+.sensor-chart-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.sensor-chart-container:hover {
+  transform: translateY(-4px);
+}
+
+.sensor-chart-container p {
+  margin-top: 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Mobile Sensor Styles */
+.mobile-sensor {
+  display: none;
+}
+
+.sensor-slider {
+  height: 8px;
+  width: 100%;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.sensor-slider-fill {
+  height: 100%;
+  background: var(--accent-primary);
+}
+
+.sensor-value {
   font-family: 'Orbitron', sans-serif;
+  font-weight: bold;
+  font-size: 1.25rem;
+  margin-right: 8px;
 }
 
-/* Hamburger menu styles - Fix for visibility on mobile */
+.sensor-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.sensor-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Dashboard Container */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+/* Media Queries */
+@media screen and (max-width: 992px) {
+  .sensor-row {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .sensor-chart-container {
+    width: 150px;
+    height: 150px;
+    flex: 0 0 calc(50% - 1rem);
+    margin-bottom: 1rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .custom-nav {
+    padding: 1rem;
+  }
+
+  .nav-right {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    padding: 1rem;
+    flex-direction: column;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .nav-right.open {
+    display: flex;
+  }
+
+  .hamburger-menu {
+    display: flex;
+  }
+
+  .health-bar {
+    display: none;
+  }
+
+  .health-indicator {
+    font-size: 1.1rem;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  .dashboard-container {
+    padding: 1rem;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  /* Hide donuts on mobile */
+  .sensor-container {
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+  
+  .sensor-row {
+    display: none;
+  }
+  
+  /* Show mobile sliders instead */
+  .mobile-sensor {
+    display: block;
+    padding: 0.5rem 0;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .plant-health {
+    margin-bottom: 1rem;
+  }
+  
+  .health-indicator {
+    margin-bottom: 0;
+  }
+}
+
+/* Modern Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Status Colors */
+.status-good {
+  color: var(--status-good);
+}
+
+.status-warning {
+  color: var(--status-warning);
+}
+
+.status-danger {
+  color: var(--status-danger);
+}
+
+/* Modern Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+}
+
+/* Hamburger Menu */
 .hamburger-menu {
-  display: none; /* Hidden by default on all screens */
+  display: none;
   flex-direction: column;
   justify-content: space-between;
   width: 30px;
-  height: 21px;
+  height: 24px;
   cursor: pointer;
+  z-index: 200;
+  transition: all 0.3s ease-in-out;
 }
 
 .hamburger-line {
   width: 100%;
   height: 3px;
-  background-color: #4fd1c5;
-  transition: all 0.3s ease;
+  background-color: var(--accent-primary);
+  border-radius: 2px;
+  transition: all 0.3s ease-in-out;
 }
 
-/* Responsive styles for mobile devices */
-@media screen and (max-width: 768px) {
-  /* Show hamburger on mobile */
-  .hamburger-menu {
-    display: flex;
-    z-index: 101; /* Ensure it's above other elements */
+/* Mobile App Styling */
+@media screen and (max-width: 576px) {
+  .card {
+    border-radius: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   }
   
-  /* Hide nav buttons by default on mobile */
-  .nav-right {
-    display: none;
-    position: absolute;
-    top: 70px;
-    right: 0;
-    left: 0;
-    background-color: #2a3647;
-    flex-direction: row !important;
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
-    padding: 1rem;
-    z-index: 100;
-    border-radius: 0 0 1rem 1rem;
-    align-items: center;
+  .card-header {
+    padding: 16px;
   }
   
-  .nav-right.open {
-    display: flex;
+  .card-header h3 {
+    font-size: 1.25rem;
   }
   
-  /* Nav button styling - overwrite conflicting rules */
-  .nav-btn, #nav-btn {
-    width: auto !important; /* Use !important to override conflicting rules */
-    margin: 0.5rem 1rem !important;
-    min-width: 120px; /* Ensure buttons have consistent width */
-    text-align: center;
-  }
-  
-  /* Container adjustments */
-  .dashboard-container {
-    padding: 0 0.5rem;
-  }
-  
-  /* Card body adjustments */
-  .card-body {
-    padding: 1rem;
-  }
-  
-  /* Change sensor row for mobile */
-  .sensor-row {
-    flex-wrap: wrap; /* For mobile - wrap to two per row */
-    flex-direction: row !important;
-  }
-  
-  .sensor-chart-container {
-    width: calc(50% - 0.5rem) !important; /* Two per row with gap */
-    max-width: none; /* Remove conflicting max-width */
-  }
-  
-  /* Health indicator styles for mobile */
   .health-indicator {
-    padding: 0.25rem 1rem;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sensor-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  
+  .sensor-value {
+    font-size: 1.1rem;
+  }
+  
+  .sensor-slider {
+    height: 10px;
+    border-radius: 5px;
+  }
+  
+  .card-footer {
     font-size: 0.8rem;
-  }
-}
-
-/* Add these sensor grid styles for mobile */
-.sensor-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.sensor-chart-container {
-  position: relative;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.sensor-chart-container p {
-  margin: 0.5rem 0 0 0;
-  font-size: 0.9rem;
-}
-
-.health-emoji {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 2rem;
-  z-index: 10;
-}
-
-/* Mobile nav button styles */
-@media screen and (max-width: 768px) {
-  .nav-btn {
-    width: 100%;
-    margin: 0.5rem 0;
-  }
-  
-  #nav-btn {
-    width: 100%;
-  }
-  
-  /* Better spacing for cards on mobile */
-  .card {
-    margin-bottom: 1.5rem;
-  }
-  
-  /* Clearer chart labels */
-  .sensor-chart-container p {
-    font-weight: bold;
-    color: #cbd5e0;
-  }
-}
-
-/* Fix the sensor layout on mobile */
-.sensor-container {
-  margin-top: 1.5rem;
-}
-
-.sensor-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-  gap: 1rem;
-  flex-wrap: nowrap; /* For desktop view - all charts in one row */
-}
-
-.desktop-row {
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.sensor-chart-container {
-  position: relative;
-  text-align: center;
-  width: 23%; /* For desktop - roughly 1/4 of the space */
-  margin-bottom: 1rem;
-}
-
-.sensor-chart-container canvas {
-  width: 100% !important;
-  height: auto !important;
-  aspect-ratio: 1/1; /* Keep circular shape */
-  max-width: 150px;
-  margin: 0 auto;
-}
-
-.desktop-row .sensor-chart-container {
-  width: 22%;
-}
-
-/* Mobile adjustments - ensure donut charts display properly */
-@media screen and (max-width: 768px) {
-  .card {
-    margin-bottom: 1.5rem;
-    overflow: hidden;
-  }
-  
-  .sensor-row {
-    flex-wrap: wrap; /* For mobile - wrap to two per row */
-  }
-  
-  .sensor-chart-container {
-    width: calc(50% - 0.5rem); /* Two per row with gap */
-  }
-  
-  /* Set fixed dimensions for charts on mobile */
-  .sensor-chart-container canvas {
-    width: 100px !important;
-    height: 100px !important;
-    display: block;
-    margin: 0 auto;
-  }
-  
-  /* Prevent content from growing too large */
-  .card-body {
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  
-  /* Remove conflicting rule */
-  .sensor-row {
-    flex-direction: row !important; /* Override the previous column direction */
+    padding: 12px 16px;
+    text-align: center;
+    border-top: 1px solid var(--card-border);
   }
 }

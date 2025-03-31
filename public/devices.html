@@ -2,19 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DigiPlant Dashboard - Devices</title>
-  <!-- Orbitron font for the futuristic style -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap"
-    rel="stylesheet"
-  />
-  <!-- Custom CSS that replicates the Tailwind look -->
+  <!-- Modern fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="/css/styles.css" />
-  <!-- Chart.js for the doughnut charts -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"
-    defer
-  ></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" defer></script>
   <!-- Our devices JS code -->
   <script src="/js/devices.js" defer></script>
 </head>
@@ -22,13 +17,12 @@
   <!-- NAVBAR -->
   <nav class="custom-nav">
     <div class="nav-left">
-      <!-- Inline SVG icon that mimics the Leaf from lucide-react -->
       <svg
         width="40"
         height="40"
         viewBox="0 0 24 24"
         fill="none"
-        stroke="#38B2AC"
+        stroke="currentColor"
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -45,14 +39,13 @@
       <span class="hamburger-line"></span>
     </div>
     <div class="nav-right" id="nav-menu">
-      <a href="./index.html"><button id="nav-btn">Dashboard</button></a>
-      <a href="./devices.html"><button id="nav-btn">Devices</button></a>
+      <a href="./index.html" class="nav-btn">Dashboard</a>
+      <a href="./devices.html" class="nav-btn">Devices</a>
     </div>
   </nav>
 
-  <!-- MAIN DASHBOARD GRID -->
+  <!-- MAIN DEVICES GRID -->
   <main class="device-container">
-    <!-- Cards get injected here by dashboard.js -->
     <div id="device" class="device-grid"></div>
   </main>
 </body>

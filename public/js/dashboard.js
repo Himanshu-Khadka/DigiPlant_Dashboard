@@ -1,5 +1,39 @@
 // public/js/dashboard.js
 
+// Theme toggle functionality
+function setupThemeToggle() {
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = themeToggle.querySelector('.sun-icon');
+  const moonIcon = themeToggle.querySelector('.moon-icon');
+
+  // Set dark mode as default
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcons(savedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcons(newTheme);
+  });
+}
+
+function updateThemeIcons(theme) {
+  const sunIcon = document.querySelector('.sun-icon');
+  const moonIcon = document.querySelector('.moon-icon');
+  
+  if (theme === 'light') {
+    sunIcon.style.display = 'none';
+    moonIcon.style.display = 'block';
+  } else {
+    sunIcon.style.display = 'block';
+    moonIcon.style.display = 'none';
+  }
+}
+
 // Function to toggle hamburger menu
 function setupHamburgerMenu() {
   const hamburger = document.getElementById('hamburger-menu');
@@ -13,7 +47,10 @@ function setupHamburgerMenu() {
 }
 
 // Run setup when DOM is loaded
-document.addEventListener('DOMContentLoaded', setupHamburgerMenu);
+document.addEventListener('DOMContentLoaded', () => {
+  setupHamburgerMenu();
+  setupThemeToggle();
+});
 
 // Global storage for chart instances.
 let charts = {};
@@ -29,23 +66,31 @@ Chart.pluginService.register({
       var centerConfig = chart.config.options.center;
       var fontStyle = centerConfig.fontStyle || 'Orbitron';
       var txt = centerConfig.text;
-      var color = centerConfig.color || '#FFF';
-      var sidePadding = centerConfig.sidePadding || 20;
-      var sidePaddingCalculated = (sidePadding / 100) * (chart.innerRadius * 2);
-      ctx.font = "bold " + (chart.innerRadius / 1.5) + "px " + fontStyle;
-      var textWidth = ctx.measureText(txt).width;
-      var elementWidth = (chart.innerRadius * 2) - sidePaddingCalculated;
-      var widthRatio = elementWidth / textWidth;
-      var newFontSize = Math.floor((chart.innerRadius / 1.5) * widthRatio);
-      var elementHeight = (chart.innerRadius * 2);
-      var fontSizeToUse = Math.min(newFontSize, elementHeight);
+      var color = centerConfig.color || '#FFFFFF';
+      
+      // Use a consistent font size calculation
+      var fontSize = Math.min(chart.innerRadius / 1.8, 24);
+      
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       var centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
       var centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-      ctx.font = "bold " + fontSizeToUse + "px " + fontStyle;
+      ctx.font = "bold " + fontSize + "px " + fontStyle;
       ctx.fillStyle = color;
+      
+      // Add a subtle text shadow for better visibility
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+      ctx.shadowBlur = 3;
+      ctx.shadowOffsetX = 1;
+      ctx.shadowOffsetY = 1;
+      
       ctx.fillText(txt, centerX, centerY);
+      
+      // Reset shadow for other drawing operations
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
     }
   }
 });
@@ -87,7 +132,7 @@ function createDoughnutChart(canvasId, percentage, parameterType, value) {
     data: {
       datasets: [{
         data: [percentage, 100 - percentage],
-        backgroundColor: [chartColor, '#555555'],
+        backgroundColor: [chartColor, 'rgba(80, 90, 120, 0.3)'],
         borderWidth: 0
       }]
     },
@@ -104,7 +149,7 @@ function createDoughnutChart(canvasId, percentage, parameterType, value) {
       maintainAspectRatio: false,
       center: {
         text: percentage.toFixed(0) + '%',
-        color: '#FFF',
+        color: '#FFFFFF',
         fontStyle: 'Orbitron',
         sidePadding: 20
       }
@@ -131,7 +176,7 @@ function handleResize() {
   }, 200); // 200ms debounce
 }
 
-// Modify the createDeviceCard function to fix the chart layout
+// Modify the createDeviceCard function to include mobile-friendly views
 function createDeviceCard(deviceId, data) {
   // Calculate plant health
   const health = calculatePlantHealth(data);
@@ -154,7 +199,18 @@ function createDeviceCard(deviceId, data) {
   card.className = 'card';
   card.id = `card-${deviceId}`;
   
-  // Same layout for mobile and desktop, just styled differently with CSS
+  // Normalize sensor values to percentages
+  let tempPct = Math.min(100, data.temperature);
+  let humPct = Math.min(100, data.humidity);
+  let soilPct = Math.min(100, ((1023 - data.soil) / 1023) * 100);
+  let ldrPct = Math.min(100, (data.ldr / 1023) * 100);
+  
+  // Get colors for sliders based on parameter thresholds
+  const tempColor = getSensorColor('tempChart', data.temperature);
+  const humColor = getSensorColor('humChart', data.humidity);
+  const soilColor = getSensorColor('soilChart', data.soil);
+  const ldrColor = getSensorColor('ldrChart', data.ldr);
+  
   card.innerHTML = `
     <div class="card-header"><h3>${deviceId}</h3></div>
     <div class="card-body">
@@ -169,11 +225,13 @@ function createDeviceCard(deviceId, data) {
           <div style="height: 100%; width: ${health.score}%; background-color: ${health.color};"></div>
         </div>
       </div>
+      
+      <!-- Desktop/Tablet view with donut charts -->
       <div class="sensor-container">
         <div class="sensor-row">
           <div class="sensor-chart-container">
             <canvas id="tempChart-${deviceId}"></canvas>
-            <p>Temp</p>
+            <p>Temperature</p>
           </div>
           <div class="sensor-chart-container">
             <canvas id="humChart-${deviceId}"></canvas>
@@ -181,21 +239,82 @@ function createDeviceCard(deviceId, data) {
           </div>
           <div class="sensor-chart-container">
             <canvas id="soilChart-${deviceId}"></canvas>
-            <p>Soil</p>
+            <p>Soil Moisture</p>
           </div>
           <div class="sensor-chart-container">
             <canvas id="ldrChart-${deviceId}"></canvas>
-            <p>Light</p>
+            <p>Light Level</p>
           </div>
+        </div>
+      </div>
+      
+      <!-- Mobile view with sliders -->
+      <div class="mobile-sensor">
+        <div class="sensor-info">
+          <div class="sensor-label">Temperature</div>
+          <div class="sensor-value" style="color: ${tempColor}">${data.temperature}°C</div>
+        </div>
+        <div class="sensor-slider">
+          <div class="sensor-slider-fill" style="width: ${tempPct}%; background-color: ${tempColor}"></div>
+        </div>
+        
+        <div class="sensor-info">
+          <div class="sensor-label">Humidity</div>
+          <div class="sensor-value" style="color: ${humColor}">${data.humidity}%</div>
+        </div>
+        <div class="sensor-slider">
+          <div class="sensor-slider-fill" style="width: ${humPct}%; background-color: ${humColor}"></div>
+        </div>
+        
+        <div class="sensor-info">
+          <div class="sensor-label">Soil Moisture</div>
+          <div class="sensor-value" style="color: ${soilColor}">${soilPct.toFixed(0)}%</div>
+        </div>
+        <div class="sensor-slider">
+          <div class="sensor-slider-fill" style="width: ${soilPct}%; background-color: ${soilColor}"></div>
+        </div>
+        
+        <div class="sensor-info">
+          <div class="sensor-label">Light Level</div>
+          <div class="sensor-value" style="color: ${ldrColor}">${ldrPct.toFixed(0)}%</div>
+        </div>
+        <div class="sensor-slider">
+          <div class="sensor-slider-fill" style="width: ${ldrPct}%; background-color: ${ldrColor}"></div>
         </div>
       </div>
     </div>
     <div class="card-footer">
-      Updated: ${data.updatedAt}
+      Updated: ${new Date(data.updatedAt).toLocaleString()}
     </div>
   `;
   
   return card;
+}
+
+// Helper function to get appropriate color based on sensor value
+function getSensorColor(parameterType, value) {
+  // Define thresholds for each parameter
+  const thresholds = {
+    tempChart: { good: { min: 18, max: 28 }, fair: { min: 15, max: 32 } },
+    humChart: { good: { min: 40, max: 70 }, fair: { min: 30, max: 80 } },
+    soilChart: { good: { min: 300, max: 700 }, fair: { min: 200, max: 800 } },
+    ldrChart: { good: { min: 300, max: 800 }, fair: { min: 200, max: 900 } }
+  };
+  
+  // Get the appropriate threshold based on parameter type
+  let threshold = thresholds.tempChart; // Default
+  if (parameterType === 'humChart') threshold = thresholds.humChart;
+  if (parameterType === 'soilChart') threshold = thresholds.soilChart;
+  if (parameterType === 'ldrChart') threshold = thresholds.ldrChart;
+  
+  // Determine color based on thresholds
+  if (value >= threshold.good.min && value <= threshold.good.max) {
+    return '#22c55e'; // Green - good condition
+  } else if (value >= threshold.fair.min && value <= threshold.fair.max) {
+    return '#f97316'; // Orange - fair condition
+  } else {
+    return '#ef4444'; // Red - poor condition
+  }
 }
 
 // Update the updateDashboard function to prevent continuous reloading
